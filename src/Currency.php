@@ -78,11 +78,13 @@ class Currency
         $to = $to ?: $this->getUserCurrency();
 
         // Get exchange rates
-        $from_rate = $this->getCurrencyProp($from, 'exchange_rate');
-        $to_rate = $this->getCurrencyProp($to, 'exchange_rate');
+        $exchangeRate = $this->getCurrencyProp($from, 'exchange_rate');
+
+        $fromRate = $exchangeRate[$from];
+        $toRate = $exchangeRate[$to];
 
         // Skip invalid to currency rates
-        if ($to_rate === null) {
+        if ($toRate === null) {
             return null;
         }
 
@@ -91,7 +93,7 @@ class Currency
             if ($from === $to) {
                 $value = $amount;
             } else {
-                $value = ($amount * $to_rate) / $from_rate;
+                $value = ($amount * $toRate) / $fromRate;
             }
         } catch (\Exception $e) {
             // Prevent invalid conversion or division by zero errors
@@ -342,7 +344,9 @@ class Currency
      */
     protected function getCurrencyProp($code, $key, $default = null)
     {
-        return Arr::get($this->getCurrency($code), $key, $default);
+        $json = Arr::get($this->getCurrency($code), $key, $default);
+
+        return json_decode($json, true);
     }
 
     /**
