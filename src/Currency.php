@@ -344,9 +344,14 @@ class Currency
      */
     protected function getCurrencyProp($code, $key, $default = null)
     {
-        $json = Arr::get($this->getCurrency($code), $key, $default);
+        if($key == 'exchange_rate') {
+            $json = Arr::get($this->getCurrency($code), $key, $default);
 
-        return json_decode($json, true);
+            return json_decode($json, true);
+        }
+        else {
+            return Arr::get($this->getCurrency($code), $key, $default);
+        }
     }
 
     /**
